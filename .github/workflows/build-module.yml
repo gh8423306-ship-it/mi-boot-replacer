@@ -238,6 +238,28 @@ jobs:
             TARGET_LOCATION="system/product/media"
           fi
 
+          # Remove all existing media directories to avoid conflicts
+          # Only keep the one we're targeting
+          echo "Cleaning up existing media directories..."
+
+          MEDIA_DIRS=(
+            "build/module/system/product/media"
+            "build/module/system/media"
+            "build/module/system/system_ext/media"
+            "build/module/system/product/media/theme/default"
+          )
+
+          for dir in "${MEDIA_DIRS[@]}"; do
+            if [ -d "$dir" ]; then
+              # Check if this is the target or a parent of the target
+              TARGET_DIR_FULL="build/module/$TARGET_LOCATION"
+              if [[ "$TARGET_DIR_FULL" != "$dir"* ]]; then
+                echo "  Removing: $dir"
+                rm -rf "$dir"
+              fi
+            fi
+          done
+
           # Create target directory
           TARGET_DIR="build/module/$TARGET_LOCATION"
           mkdir -p "$TARGET_DIR"
