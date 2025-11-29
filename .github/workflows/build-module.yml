@@ -6,7 +6,7 @@ name: Build Custom Boot Animation Module
 # 3. Run this workflow manually
 # 4. Download the ready-to-flash module
 
-run-name: "Build: ${{ inputs.source == 'template' && format('{0}/{1}', inputs.device, inputs.system) || 'upload' }} → ${{ inputs.target_location }}"
+run-name: "Build: ${{ inputs.source == 'template' && format('{0}/{1}', inputs.device, inputs.theme) || 'upload' }} → ${{ inputs.target_location }}"
 
 on:
   workflow_dispatch:
@@ -26,8 +26,8 @@ on:
         type: choice
         options:
           - 'liuqin'
-      system:
-        description: 'System type (only used when source is template)'
+      theme:
+        description: 'Theme (only used when source is template)'
         required: false
         default: 'HyperOS'
         type: choice
@@ -122,17 +122,17 @@ jobs:
           echo "Source: $SOURCE"
 
           if [ "$SOURCE" = "template" ]; then
-            # Build template path from device and system inputs
+            # Build template path from device and theme inputs
             DEVICE="${{ github.event.inputs.device }}"
-            SYSTEM="${{ github.event.inputs.system }}"
+            THEME="${{ github.event.inputs.theme }}"
 
             # Use defaults if not specified
             DEVICE="${DEVICE:-liuqin}"
-            SYSTEM="${SYSTEM:-HyperOS}"
+            THEME="${THEME:-HyperOS}"
 
-            TEMPLATE_DIR="templates/$DEVICE/$SYSTEM"
+            TEMPLATE_DIR="templates/$DEVICE/$THEME"
 
-            echo "Using template: $DEVICE/$SYSTEM"
+            echo "Using template: $DEVICE/$THEME"
 
             if [ ! -d "$TEMPLATE_DIR" ]; then
               echo "Error: Template directory not found: $TEMPLATE_DIR"
@@ -343,7 +343,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.create_zip.outputs.zip_name }}
-          path: build/${{ steps.create_zip.outputs.zip_name }}
+          path: build/module
           retention-days: 90
           compression-level: 0
 
@@ -357,8 +357,8 @@ jobs:
           # Build source description
           if [ "$SOURCE" = "template" ]; then
             DEVICE="${{ github.event.inputs.device }}"
-            SYSTEM="${{ github.event.inputs.system }}"
-            SOURCE_DESC="template: $DEVICE/$SYSTEM"
+            THEME="${{ github.event.inputs.theme }}"
+            SOURCE_DESC="template: $DEVICE/$THEME"
           else
             SOURCE_DESC="upload"
           fi
@@ -397,16 +397,14 @@ jobs:
 
           1. Scroll down to the **Artifacts** section below
           2. Click on the module ZIP file to download
-          3. The download will be a ZIP containing the module
 
           ## Installation
 
-          1. Extract the downloaded artifact (if needed)
-          2. Flash the module ZIP using:
+          1. Flash the downloaded module ZIP using:
              - **Magisk Manager** → Modules → Install from storage
              - **KernelSU** → Module → Install
              - **APatch** → Module → Install
-          3. Reboot your device
+          2. Reboot your device
 
           ## Notes
 
