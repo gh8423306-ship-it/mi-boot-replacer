@@ -12,10 +12,26 @@ A simple module designed exclusively for tablet devices, replacing the boot anim
 
 ## Tested Devices
 
-| System Version | Xiaomi Pad 6 Pro (liuqin) | Works?
-|| V14.0.9.0.TMYCNXM (MIUI 14) | ✅ |
-|| OS2.0.203.0.VMYCNXM (HyperOS 2) | ✅ |
-|| OS2.0.212.0.VMYCNXM (HyperOS 2) | ✅ |
+| Device | System Version | Status |
+|--------|----------------|:------:|
+| liuqin | V14.0.9.0.TMYCNXM (MIUI 14) | ✅ |
+| liuqin | OS2.0.203.0.VMYCNXM (HyperOS 2) | ✅ |
+| liuqin | OS2.0.212.0.VMYCNXM (HyperOS 2) | ✅ |
+
+<details>
+<summary>Device Code Reference</summary>
+
+| Code | Device Name |
+|------|-------------|
+| liuqin | Xiaomi Pad 6 Pro |
+| pipa | Xiaomi Pad 6 |
+| yudi | Xiaomi Pad 6 Max |
+| nabu | Xiaomi Pad 5 |
+| elish | Xiaomi Pad 5 Pro |
+| enuma | Xiaomi Pad 5 Pro 5G |
+| dagu | Xiaomi Pad 5 Pro 12.4 |
+
+</details>
 
 > [!NOTE]
 > This module should work on other tablet models, brands, and systems, but further testing is needed. Feel free to report your results!

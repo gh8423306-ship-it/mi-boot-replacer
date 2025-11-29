@@ -6,11 +6,26 @@
 
 ## 已测试设备
 
-| 设备 | liuqin | pipa | yudi
-| :---: | :---------- | :---------- | :---------- |
-| 已测试 | V14.0.9.0.TMYCNXM (MIUI 14) |
-| 已测试 | OS2.0.203.0.VMYCNXM (HyperOS 2) |
-| 已测试 | OS2.0.212.0.VMYCNXM (HyperOS 2) |
+| 设备 | 系统版本 | 状态 |
+|------|----------|:----:|
+| liuqin | V14.0.9.0.TMYCNXM (MIUI 14) | ✅ |
+| liuqin | OS2.0.203.0.VMYCNXM (HyperOS 2) | ✅ |
+| liuqin | OS2.0.212.0.VMYCNXM (HyperOS 2) | ✅ |
+
+<details>
+<summary>设备代码对照表</summary>
+
+| 代码 | 设备名称 |
+|------|----------|
+| liuqin | 小米平板 6 Pro |
+| pipa | 小米平板 6 |
+| yudi | 小米平板 6 Max |
+| nabu | 小米平板 5 |
+| elish | 小米平板 5 Pro |
+| enuma | 小米平板 5 Pro 5G |
+| dagu | 小米平板 5 Pro 12.4 |
+
+</details>
 
 > [!NOTE]
 > 此模块应该可以在其他平板型号、品牌和系统上运行，但仍需进一步测试。欢迎反馈您的测试结果！
