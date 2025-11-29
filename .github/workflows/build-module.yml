@@ -3,7 +3,7 @@ name: Build Custom Boot Animation Module
 # This workflow allows users to:
 # 1. Fork this repo
 # 2. Choose a template OR add custom bootanimation.zip files to the 'upload' folder
-# 3. Run this workflow
+# 3. Run this workflow manually
 # 4. Download the ready-to-flash module
 
 on:
@@ -30,14 +30,6 @@ on:
           - 'system/system_ext/media'
           - 'system/product/media/theme/default'
 
-  # Also trigger when files are pushed to upload folder
-  push:
-    paths:
-      - 'upload/**'
-    branches:
-      - main
-      - master
-
 jobs:
   build-module:
     runs-on: ubuntu-latest
@@ -51,46 +43,44 @@ jobs:
 
       - name: Download latest release module
         id: download_release
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
-          echo "Fetching latest release..."
+          echo "Fetching latest release info from update.json..."
 
-          # Get the latest non-prerelease release
-          RELEASE_INFO=$(gh release list --repo ${{ github.repository }} --exclude-drafts --exclude-pre-releases --limit 1 --json tagName,name)
-
-          if [ -z "$RELEASE_INFO" ] || [ "$RELEASE_INFO" = "[]" ]; then
-            echo "Error: No releases found!"
-            echo "Please create a release first."
+          # Read update.json to get the download URL
+          if [ ! -f "update.json" ]; then
+            echo "Error: update.json not found!"
             exit 1
           fi
 
-          TAG_NAME=$(echo "$RELEASE_INFO" | jq -r '.[0].tagName')
-          RELEASE_NAME=$(echo "$RELEASE_INFO" | jq -r '.[0].name')
+          ZIP_URL=$(jq -r '.zipUrl' update.json)
+          VERSION=$(jq -r '.version' update.json)
 
-          echo "Found release: $RELEASE_NAME ($TAG_NAME)"
-          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+          if [ -z "$ZIP_URL" ] || [ "$ZIP_URL" = "null" ]; then
+            echo "Error: No zipUrl found in update.json!"
+            exit 1
+          fi
 
-          # Download the release assets
+          echo "Version: $VERSION"
+          echo "Download URL: $ZIP_URL"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          # Download the module zip
           mkdir -p release_download
           cd release_download
 
-          gh release download "$TAG_NAME" --repo ${{ github.repository }} --pattern "*.zip"
+          echo "Downloading module..."
+          curl -L -o module.zip "$ZIP_URL"
 
-          # Find the module zip
-          MODULE_ZIP=$(ls *.zip 2>/dev/null | head -n 1)
-
-          if [ -z "$MODULE_ZIP" ]; then
-            echo "Error: No ZIP file found in release!"
+          if [ ! -f "module.zip" ]; then
+            echo "Error: Failed to download module!"
             exit 1
           fi
 
-          echo "Downloaded: $MODULE_ZIP"
-          echo "module_zip=$MODULE_ZIP" >> $GITHUB_OUTPUT
+          echo "Downloaded: module.zip"
 
           # Extract the module
           mkdir -p ../build/module
-          unzip -o "$MODULE_ZIP" -d ../build/module
+          unzip -o "module.zip" -d ../build/module
 
           echo "Module extracted successfully"
 
@@ -325,7 +315,7 @@ jobs:
           |----------|-------|
           | **File** | \`${{ steps.create_zip.outputs.zip_name }}\` |
           | **Size** | ${{ steps.create_zip.outputs.zip_size }} |
-          | **Base Release** | ${{ steps.download_release.outputs.tag }} |
+          | **Base Release** | ${{ steps.download_release.outputs.version }} |
           | **Source** | $SOURCE |
           | **Name** | ${{ steps.module_info.outputs.module_name }} |
           | **Version** | ${{ steps.module_info.outputs.module_version }} |
