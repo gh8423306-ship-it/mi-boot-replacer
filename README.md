@@ -2,7 +2,7 @@
 English | [简体中文](/README_zh-CN.md)
 
 ## Introduction
-A simple module designed exclusively for tablet devices, replacing the boot animations with custom ones. Unlike phones, tablets often adapt their animations based on device orientation. This repo also act as a storage to store different animation designs **(Update soon!)**.
+A simple module designed exclusively for tablet devices, replacing the boot animations with custom ones. Unlike phones, tablets often adapt their animations based on device orientation.
 
 ## Requirements
 - Magisk v26.1+ / KernelSU v0.8.0+ / APatch 10568+
@@ -10,70 +10,109 @@ A simple module designed exclusively for tablet devices, replacing the boot anim
 > [!WARNING]
 > This module is designed for Magisk. KernelSU and APatch are not fully supported and unexpected bugs may occur.
 
-> [!NOTE]  
-> Currently tested only on the Xiaomi Pad 6 Pro (liuqin) running V14.0.9.0.TMYCNXM or OS2.0.203.0.VMYCNXM. It should basically work on every other tablet models, brands, and systems, but further testing is needed to confirm compatibility.
+## Tested Devices
 
-## Themes
-- Original but light themed
-- **(Update soon!)**
+| System Version | Xiaomi Pad 6 Pro (liuqin) | Works?
+|| V14.0.9.0.TMYCNXM (MIUI 14) | ✅ |
+|| OS2.0.203.0.VMYCNXM (HyperOS 2) | ✅ |
+|| OS2.0.212.0.VMYCNXM (HyperOS 2) | ✅ |
+
+> [!NOTE]
+> This module should work on other tablet models, brands, and systems, but further testing is needed. Feel free to report your results!
 
 ## Installation
-1. Download the [latest](https://github.com/G0246/mipad-custom-boot/releases/latest) release
-2. Make sure to update the animation timing, design or resolution to your liking (Optional)
+
+> [!CAUTION]
+> Do not directly download and flash the releases unless you want to manually replace the bootanimation files yourself. Use the **GitHub Actions workflow** below to build a module with your own animations.
+
+1. Use the [GitHub Actions workflow](#github-actions-build-your-own-module) to build your custom module
+2. Download the built module from Artifacts
 3. Flash .zip module in the Magisk / KernelSU / APatch app
+
 > [!TIP]
-> If you get a blank screen after adding your own animation, it’s likely because the ZIP file wasn’t compressed right. Use "store-only" mode (no compression) when creating the ZIP.
+> If you get a blank screen after adding your own animation, it's likely because the ZIP file wasn't compressed right. Use "store-only" mode (no compression) when creating the ZIP.
 
 ## To-Dos
-1. ~~Add a script (Python) to automate the generation of different orientation/resolution animation ZIPs~~ (Done)
+1. ~~Add GitHub Actions workflow for automated module building~~ (Done)
 2. Auto detect and select path for corresponding models
 
-## Zip Bootanimation Script (Initial Version)
-> [!NOTE]
-> This script is an **initial version** and may be updated in the future with more features and improvements.
+## GitHub Actions (Build Your Own Module)
 
-A Python script to automate the creation of bootanimation ZIP files in store-only mode (no compression).
+You can use GitHub Actions to build a custom boot animation module without any local tools! The workflow automatically downloads the latest release as a base.
 
-### Requirements
-- Python 3.9+
+### Method 1: Fork and Upload Files
 
-### Usage
-```bash
-python zip_bootanimation.py <path_to_directory>
-```
+1. **Fork** this repository
+2. Add your `bootanimation.zip` files to the `bootanimations/` folder
+3. Commit and push your changes
+4. Go to **Actions** → **"Build Custom Boot Animation Module"**
+5. Click **"Run workflow"**
+6. Select the **Target location** for your bootanimation files
+7. Download the built module from **Artifacts**
 
-### How It Works
-1. Place your bootanimation folders in a directory (e.g., `bootanimation/`, `bootanimation01/`, `bootanimation02/`, etc.)
-2. Each folder **must** contain:
-   - A `part0/` folder (with your animation frames)
-   - A `desc.txt` file (animation descriptor)
-3. Run the script with the path to your directory
-4. The script will create `.zip` files for each valid bootanimation folder
+### Method 2: Use Direct URLs
 
-### Example
-```
-my_animations/
-├── bootanimation/
-│   ├── desc.txt
-│   └── part0/
-│       ├── 00.png
-│       └── 01.png
-├── bootanimation01/
-│   ├── desc.txt
-│   └── part0/
-│       └── 00.png
-```
+1. Go to **Actions** → **"Build Custom Boot Animation Module"**
+2. Click **"Run workflow"**
+3. Select the **Target location**
+4. Enter direct download URLs to your bootanimation files (comma-separated)
+5. Download the built module from **Artifacts**
 
-Run:
-```bash
-python zip_bootanimation.py my_animations
-```
+### Available Target Locations
 
-Output:
+| Location | Description |
+|----------|-------------|
+| `system/product/media` | Default location (most devices) |
+| `system/media` | Legacy location |
+| `system/system_ext/media` | System extension media |
+| `system/product/media/theme/default` | Theme default location |
+
+### File Naming Convention
+
+- `bootanimation.zip` - Main boot animation
+- `bootanimation01.zip` - Alternative 1 (rotation variant)
+- `bootanimation02.zip` - Alternative 2
+- ... and so on
+
+### Bootanimation File Requirements
+
+Each `bootanimation.zip` should contain:
+
 ```
 bootanimation.zip
-bootanimation01.zip
+├── desc.txt          # Required: Animation descriptor
+├── part0/            # Required: First animation part
+│   ├── 00000.png
+│   ├── 00001.png
+│   └── ...
+├── part1/            # Optional: Second animation part
+│   ├── 00000.png
+│   └── ...
+└── ...
 ```
+
+#### desc.txt Format
+
+```
+<width> <height> <fps>
+<type> <count> <pause> <path>
+...
+```
+
+Example:
+```
+1080 1920 60
+c 1 0 part0
+c 0 0 part1
+```
+
+- `c` = Play complete (or `p` = play and repeat)
+- First number = loop count (0 = infinite)
+- Second number = pause after loop (in frames)
+- Path = folder containing the frames
+
+> [!IMPORTANT]
+> Bootanimation ZIP files **must** use STORE compression (no compression). The workflow handles this automatically.
 
 ## Disclaimer
 **Flashing this module may cause your device to bootloop, a bootloop saver module is highly recommended. I am not responsible for any damages caused to your device or data by using this module. Use at your own risk.**

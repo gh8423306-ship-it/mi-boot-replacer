@@ -3,8 +3,16 @@
 
 ## 介绍
 专为平板设备打造的修改开机动画模块。平板与其他设备略有不同，其动画会根据设备的方向而更改。
-> [!NOTE] 
-目前仅在小米 Pad 6 Pro (liuqin) V14.0.9.0.TMYCNXM 及 OS2.0.203.0.VMYCNXM 上进行了测试。其他平板型号、品牌和系统的平板电脑基本都能兼容，但兼容性仍需进一步测试。
+
+## 已测试设备
+
+| 系统版本 | 小米 Pad 6 Pro (liuqin) | 能用吗
+|| V14.0.9.0.TMYCNXM (MIUI 14) | ✅ |
+|| OS2.0.203.0.VMYCNXM (HyperOS 2) | ✅ |
+|| OS2.0.212.0.VMYCNXM (HyperOS 2) | ✅ |
+
+> [!NOTE]
+> 此模块应该可以在其他平板型号、品牌和系统上运行，但仍需进一步测试。欢迎反馈您的测试结果！
 
 ## 要求
 - Magisk v26.1+ / KernelSU v0.8.0+ / APatch 10568+
@@ -12,66 +20,99 @@
 > [!WARNING]
 > 此模块专为 Magisk 设计。不会为 KernelSU 和 APatch 提供支持，有可能会出现错误。
 
-## 主题
-- （之後更新）
-
 ## 安装
-1. 下载[最新](https://github.com/G0246/mipad-custom-boot/releases/latest)版本
-2. 根据自己的喜好更改动画長短或设计（可选）
-3. Magisk / KernelSU / APatch 应用中刷入 .zip 模块
+
+> [!CAUTION]
+> 请勿直接下载并刷入发布版本，除非您想手动替换开机动画文件。请使用下方的 **GitHub Actions 工作流程** 来构建包含您自定义动画的模块。
+
+1. 使用 [GitHub Actions 工作流程](#github-actions构建您自己的模块) 构建您的自定义模块
+2. 从 Artifacts 下载构建好的模块
+3. 在 Magisk / KernelSU / APatch 应用中刷入 .zip 模块
+
 > [!TIP]
 > 如果您在添加自己的动画主题后看到空白一片，则说明您没有正确压缩它，创建时请使用仅存储模式进行压缩（无压缩）。
 
 ## 待办事项
-1. ~~添加脚本（Python）以自动生成不同方向的动画 ZIP 文件~~（完成）
+1. ~~添加 GitHub Actions 工作流程以自动构建模块~~（完成）
 2. 自动检测并选择相应的路径
 
-## 压缩开机动画脚本（初始版本）
-> [!NOTE]
-> 此脚本是**初始版本**，未来可能会更新更多功能和改进。
+## GitHub Actions（构建您自己的模块）
 
-一个 Python 脚本，用于自动创建仅存储模式（无压缩）的开机动画 ZIP 文件。
+您可以使用 GitHub Actions 构建自定义开机动画模块，无需任何本地工具！工作流程会自动下载最新版本作为基础。
 
-### 要求
-- Python 3.9+
+### 方法一：Fork 并上传文件
 
-### 使用方法
-```bash
-python zip_bootanimation.py <目录路径>
-```
+1. **Fork** 此仓库
+2. 将您的 `bootanimation.zip` 文件添加到 `bootanimations/` 文件夹
+3. 提交并推送您的更改
+4. 前往 **Actions** → **"Build Custom Boot Animation Module"**
+5. 点击 **"Run workflow"**
+6. 选择开机动画文件的**目标位置**
+7. 从 **Artifacts** 下载构建好的模块
 
-### 工作原理
-1. 将开机动画文件夹放在一个目录中（例如：`bootanimation/`、`bootanimation01/`、`bootanimation02/` 等）
-2. 每个文件夹**必须**包含：
-   - `part0/` 文件夹（包含动画帧）
-   - `desc.txt` 文件（动画描述符）
-3. 使用目录路径运行脚本
-4. 脚本将为每个有效的开机动画文件夹创建 `.zip` 文件
+### 方法二：使用直接链接
 
-### 示例
-```
-my_animations/
-├── bootanimation/
-│   ├── desc.txt
-│   └── part0/
-│       ├── 00.png
-│       └── 01.png
-├── bootanimation01/
-│   ├── desc.txt
-│   └── part0/
-│       └── 00.png
-```
+1. 前往 **Actions** → **"Build Custom Boot Animation Module"**
+2. 点击 **"Run workflow"**
+3. 选择**目标位置**
+4. 输入开机动画文件的直接下载链接（多个链接用逗号分隔）
+5. 从 **Artifacts** 下载构建好的模块
 
-运行：
-```bash
-python zip_bootanimation.py my_animations
-```
+### 可用目标位置
 
-输出：
+| 位置 | 描述 |
+|------|------|
+| `system/product/media` | 默认位置（大多数设备） |
+| `system/media` | 传统位置 |
+| `system/system_ext/media` | 系统扩展媒体 |
+| `system/product/media/theme/default` | 主题默认位置 |
+
+### 文件命名规范
+
+- `bootanimation.zip` - 主开机动画
+- `bootanimation01.zip` - 备选动画 1（其他旋转角度）
+- `bootanimation02.zip` - 备选动画 2
+- ... 以此类推
+
+### 开机动画文件要求
+
+每个 `bootanimation.zip` 应包含：
+
 ```
 bootanimation.zip
-bootanimation01.zip
+├── desc.txt          # 必需：动画描述符
+├── part0/            # 必需：第一个动画部分
+│   ├── 00000.png
+│   ├── 00001.png
+│   └── ...
+├── part1/            # 可选：第二个动画部分
+│   ├── 00000.png
+│   └── ...
+└── ...
 ```
+
+#### desc.txt 格式
+
+```
+<宽度> <高度> <帧率>
+<类型> <循环次数> <暂停帧数> <路径>
+...
+```
+
+示例：
+```
+1080 1920 60
+c 1 0 part0
+c 0 0 part1
+```
+
+- `c` = 完整播放（或 `p` = 播放并重复）
+- 第一个数字 = 循环次数（0 = 无限）
+- 第二个数字 = 循环后暂停（以帧为单位）
+- 路径 = 包含帧的文件夹
+
+> [!IMPORTANT]
+> 开机动画 ZIP 文件**必须**使用 STORE 压缩（无压缩）。工作流程会自动处理此问题。
 
 ## 免责声明
 **刷写此模块可能会导致您的设备进入引导循环，强烈建议使用引导循环保护模块。对于使用此模块对您的设备或数据造成的任何损害，我概不负责。使用风险自负。**
