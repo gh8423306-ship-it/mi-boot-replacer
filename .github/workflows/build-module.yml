@@ -2,7 +2,7 @@ name: Build Custom Boot Animation Module
 
 # This workflow allows users to:
 # 1. Fork this repo
-# 2. Choose a template OR add custom bootanimation.zip files to the 'upload' folder
+# 2. Choose a device template OR add custom bootanimation.zip files to the 'upload' folder
 # 3. Run this workflow manually
 # 4. Download the ready-to-flash module
 
@@ -16,9 +16,23 @@ on:
         type: choice
         options:
           - 'upload'
-          - 'template: liuqin/HyperOS'
-          - 'template: liuqin/MIUI'
-          - 'template: liuqin/MIUI_inverted'
+          - 'template'
+      device:
+        description: 'Device model (only used when source is template)'
+        required: false
+        default: 'liuqin'
+        type: choice
+        options:
+          - 'liuqin'
+      system:
+        description: 'System type (only used when source is template)'
+        required: false
+        default: 'HyperOS'
+        type: choice
+        options:
+          - 'HyperOS'
+          - 'MIUI'
+          - 'MIUI_inverted'
       target_location:
         description: 'Where to place bootanimation files in the module'
         required: true
@@ -98,22 +112,31 @@ jobs:
 
           SOURCE="${{ github.event.inputs.source }}"
 
-          # Default to upload if not specified (e.g., push trigger)
+          # Default to upload if not specified
           if [ -z "$SOURCE" ]; then
             SOURCE="upload"
           fi
 
           echo "Source: $SOURCE"
 
-          if [[ "$SOURCE" == template:* ]]; then
-            # Extract template path (remove "template: " prefix)
-            TEMPLATE_PATH="${SOURCE#template: }"
-            TEMPLATE_DIR="templates/$TEMPLATE_PATH"
+          if [ "$SOURCE" = "template" ]; then
+            # Build template path from device and system inputs
+            DEVICE="${{ github.event.inputs.device }}"
+            SYSTEM="${{ github.event.inputs.system }}"
 
-            echo "Using template: $TEMPLATE_PATH"
+            # Use defaults if not specified
+            DEVICE="${DEVICE:-liuqin}"
+            SYSTEM="${SYSTEM:-HyperOS}"
+
+            TEMPLATE_DIR="templates/$DEVICE/$SYSTEM"
+
+            echo "Using template: $DEVICE/$SYSTEM"
 
             if [ ! -d "$TEMPLATE_DIR" ]; then
               echo "Error: Template directory not found: $TEMPLATE_DIR"
+              echo ""
+              echo "Available templates:"
+              find templates -type d -mindepth 2 -maxdepth 2 2>/dev/null || echo "  (none)"
               exit 1
             fi
 
@@ -141,7 +164,7 @@ jobs:
               echo "2. Commit and push the changes"
               echo "3. Run this workflow again"
               echo ""
-              echo "OR select a template from the dropdown."
+              echo "OR select 'template' as source and choose a device/system."
               echo ""
               echo "File naming convention:"
               echo "  - bootanimation.zip (main boot animation)"
@@ -307,6 +330,15 @@ jobs:
             SOURCE="upload"
           fi
 
+          # Build source description
+          if [ "$SOURCE" = "template" ]; then
+            DEVICE="${{ github.event.inputs.device }}"
+            SYSTEM="${{ github.event.inputs.system }}"
+            SOURCE_DESC="template: $DEVICE/$SYSTEM"
+          else
+            SOURCE_DESC="upload"
+          fi
+
           cat << EOF >> $GITHUB_STEP_SUMMARY
           # Module Built Successfully
 
@@ -317,7 +349,7 @@ jobs:
           | **File** | \`${{ steps.create_zip.outputs.zip_name }}\` |
           | **Size** | ${{ steps.create_zip.outputs.zip_size }} |
           | **Base Release** | ${{ steps.download_release.outputs.version }} |
-          | **Source** | $SOURCE |
+          | **Source** | $SOURCE_DESC |
           | **Name** | ${{ steps.module_info.outputs.module_name }} |
           | **Version** | ${{ steps.module_info.outputs.module_version }} |
           | **Author** | ${{ steps.module_info.outputs.module_author }} |
