@@ -66,10 +66,8 @@ detect_boot_dir() {
     module_boot_dir="/product/media"
   elif [ -f "$MODPATH/system/media/bootanimation.zip" ]; then
     module_boot_dir="/system/media"
-  elif [ -f "$MODPATH/system/system_ext/media/bootanimation.zip" ]; then
+  elif [ -f "$MODPATH/system_ext/media/bootanimation.zip" ]; then
     module_boot_dir="/system_ext/media"
-  elif [ -f "$MODPATH/system/product/media/theme/default/bootanimation.zip" ]; then
-    module_boot_dir="/product/media/theme/default"
   fi
 
   if [ -n "$module_boot_dir" ]; then
@@ -83,12 +81,8 @@ detect_boot_dir() {
       BOOT_DIR="/product/media"
     elif [ -f "/system/media/bootanimation.zip" ]; then
       BOOT_DIR="/system/media"
-    elif [ -f "/system/product/media/bootanimation.zip" ]; then
-      BOOT_DIR="/system/product/media"
     elif [ -f "/system_ext/media/bootanimation.zip" ]; then
       BOOT_DIR="/system_ext/media"
-    elif [ -f "/product/media/theme/default/bootanimation.zip" ]; then
-      BOOT_DIR="/product/media/theme/default"
     else
       BOOT_DIR="/product/media"
     fi
@@ -103,16 +97,15 @@ select_boot_dir() {
   ui_print "  Volume [-]: Confirm selection"
   ui_print "*********************************************"
 
-  # Available locations
+  # Available locations (3 options)
   local current_index=0
-  local total=4
+  local total=3
 
   # Find if detected location matches any option
   case "$BOOT_DIR" in
     "/product/media") current_index=0 ;;
     "/system/media") current_index=1 ;;
     "/system_ext/media") current_index=2 ;;
-    "/product/media/theme/default") current_index=3 ;;
   esac
 
   while true; do
@@ -121,7 +114,6 @@ select_boot_dir() {
       0) ui_print "  >> Product Media (Default)"; ui_print "     Path: /product/media" ;;
       1) ui_print "  >> System Media (Legacy)"; ui_print "     Path: /system/media" ;;
       2) ui_print "  >> System Ext Media"; ui_print "     Path: /system_ext/media" ;;
-      3) ui_print "  >> Theme Default"; ui_print "     Path: /product/media/theme/default" ;;
     esac
 
     key_check
@@ -135,7 +127,6 @@ select_boot_dir() {
         0) BOOT_DIR="/product/media" ;;
         1) BOOT_DIR="/system/media" ;;
         2) BOOT_DIR="/system_ext/media" ;;
-        3) BOOT_DIR="/product/media/theme/default" ;;
       esac
       ui_print ""
       ui_print "- Selected: $BOOT_DIR"

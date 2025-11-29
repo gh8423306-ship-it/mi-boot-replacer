@@ -37,13 +37,12 @@ on:
       target_location:
         description: 'Where to place bootanimation files in the module'
         required: true
-        default: 'system/product/media'
+        default: '/product/media'
         type: choice
         options:
-          - 'system/product/media'
-          - 'system/media'
-          - 'system/system_ext/media'
-          - 'system/product/media/theme/default'
+          - '/product/media'
+          - '/system/media'
+          - '/system_ext/media'
 
 jobs:
   build-module:
