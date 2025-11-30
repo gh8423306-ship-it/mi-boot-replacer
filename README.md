@@ -2,7 +2,7 @@
 English | [简体中文](/README_zh-CN.md)
 
 ## Introduction
-A simple module designed to replace the boot animations with custom ones. This module is also compatible with tablets since, in contrast to phones, tablets frequently modify their animations according to the orientation of the device.
+A simple module that replaces boot animations with custom ones and works on almost every Xiaomi device. This module is also compatible with tablets since, in contrast to phones, tablets frequently modify their animations according to the orientation of the device.
 
 This module utilizes systemless mount to mount the bootanimation files to the specified location, ensuring no modifications are made to the system partition.
 
