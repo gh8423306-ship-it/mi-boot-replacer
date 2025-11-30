@@ -1,4 +1,14 @@
-## Stable release
+## v1.1.2
+
+### Module Rebranding
+
+- **Renamed to "Xiaomi Boot Animation Replacer" (mi-boot-replacer)**
+  - The module is no longer limited to tablet devices
+  - Now supports both phones and tablets
+
+---
+
+## v1.1.1
 
 ### Bug Fixes
 
