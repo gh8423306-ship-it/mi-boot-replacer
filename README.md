@@ -250,6 +250,9 @@ You can use GitHub Actions to build a custom boot animation module without any l
 | `/system/media` | Legacy location |
 | `/system_ext/media` | System extension media |
 
+> [!TIP]
+> If you don't see any change in the boot animation after installation, you may have selected the wrong path. Try reflashing the module and select a different location.
+
 ### File Naming Convention
 
 - `bootanimation.zip` - Main boot animation
