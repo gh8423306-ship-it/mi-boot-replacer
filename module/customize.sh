@@ -1,8 +1,5 @@
 SKIPUNZIP=0
 
-# Detect API and architecture
-api_level_arch_detect
-
 # Default boot animation location
 BOOT_DIR="/product/media"
 BOOT_DIR_FROM_MODULE=false
