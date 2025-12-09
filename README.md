@@ -203,6 +203,30 @@ This module utilizes systemless mount to mount the bootanimation files to the sp
 > [!TIP]
 > If you get a blank screen after adding your own animation, it's likely because the ZIP file wasn't compressed right. Use "store-only" mode (no compression) when creating the ZIP.
 
+## Backup and Restore
+
+During the **first installation**, you'll be prompted to backup your current boot animation. The backup functionality helps you restore the original animations if needed.
+
+### Backup Behavior
+
+**First Install:**
+- When installing the module for the first time, if no backup exists, you'll be prompted to backup your current boot animation
+- Backups are stored in `/data/adb/boot-backups/` and include all `bootanimation*.zip` files from your selected location
+
+**Module Updates:**
+- When updating the module, the backup process will be automatically skipped if a backup already exists
+- Your original boot animations remain safely backed up from the first installation
+
+### Restore Original Animation
+
+To restore your original boot animation:
+
+1. **Disable or uninstall this module** in Magisk/KernelSU/APatch
+2. **Reboot** your device
+
+> [!NOTE]
+> The module uses systemless mounting, so simply disabling it will automatically restore your original animations without manual file operations.
+
 ## To-Dos
 1. ~~Add GitHub Actions workflow for automated module building~~ (Done)
 2. Auto detect and select path for corresponding models
