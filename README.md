@@ -1,4 +1,4 @@
-
+#README-TZ
 
 ## Introduction
 A simple module that replaces boot animations with custom ones and works on almost every Xiaomi device. This module is also compatible with tablets since, in contrast to phones, tablets frequently modify their animations according to the orientation of the device.
